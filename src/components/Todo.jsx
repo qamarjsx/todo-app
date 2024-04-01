@@ -1,62 +1,66 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { TodosContext } from "../contexts/TodoContext";
 
-function Todo() {
-  const [isTodoDone, setIsTodoDone] = useState(false);
-  const [isEditBtnClicked, setIsEditBtnClicked] = useState(false);
-  const [isDelBtnClicked, setIsDelBtnClicked] = useState(false);
+function Todo({ todo }) {
+  const { todos, setTodos } = useContext(TodosContext);
+  const [completed, setCompleted] = useState(todo.completed);
 
-  const handleEditClick = () => {
-    setIsEditBtnClicked(!isEditBtnClicked);
-    console.log(isEditBtnClicked);
+  const handleCheckboxChange = () => {
+    setCompleted(!completed);
+    todo.completed = !todo.completed;
+    setTodos([...todos]);
+    // console.log(todos);
   };
 
-  const handleDelClick = () => {
-    setIsDelBtnClicked(!isDelBtnClicked);
-    console.log(isDelBtnClicked);
-  };
-
-  const handleCheckboxClick = () => {
-    setIsTodoDone(!isTodoDone);
-    console.log(isTodoDone);
-  };
+  const deleteTodo = () => {
+    const newTodos = todos.filter((eachTodo) => eachTodo.id!== todo.id);
+    setTodos(newTodos);
+    console.log(todos);
+  }
 
   return (
     <div className="w-11/12 h-14 flex justify-between items-center bg-black-olive rounded-2xl mx-auto px-2 border border-orange-100 border-opacity-50 my-5">
       <div className="flex items-center justify-start w-1/2">
+        <div className="flex items-center justify-center relative">
+          <input
+            type="checkbox"
+            className="h-7 w-7 cursor-pointer appearance-none rounded-full border-2 border-solid border-orange-600 "
+            
+            onChange={handleCheckboxChange}
+          />
+          {completed && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="1em"
+              height="1em"
+              viewBox="0 0 24 24"
+              className="text-3xl absolute"
+              onClick={handleCheckboxChange}
+            >
+              <path
+                fill="#ffedd5"
+                fillRule="evenodd"
+                d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
+                clipRule="evenodd"
+              />
+            </svg>
+          )}
+        </div>
         <input
-          type="checkbox"
-          className="h-7 w-7 cursor-pointer appearance-none rounded-full border-2 border-solid border-orange-600"
-          checked={isTodoDone}
-          onChange={handleCheckboxClick}
+          type="text"
+          className={`text-xl appearance-none bg-transparent text-orange-100 font-bold ml-3`}
+          value={todo.task}
         />
-        {isTodoDone && (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1em"
-            height="1em"
-            viewBox="0 0 24 24"
-            className="relative right-[21%] text-3xl"
-            onClick={handleCheckboxClick}
-          >
-            <path
-              fill="#ffedd5"
-              fillRule="evenodd"
-              d="M12 21a9 9 0 1 0 0-18a9 9 0 0 0 0 18m-.232-5.36l5-6l-1.536-1.28l-4.3 5.159l-2.225-2.226l-1.414 1.414l3 3l.774.774z"
-              clipRule="evenodd"
-            />
-          </svg>
-        )}
-        <h1
-          className={`text-xl text-orange-100 font-bold ${
-            isTodoDone ? "-ml-[18px]" : "ml-3"
-          }`}
-        >
-          Task 1
-        </h1>
       </div>
       <div className="flex items-center justify-end w-1/2">
         <svg
-          onClick={handleEditClick}
+          onClick={() => {
+            if (todo.completed) return;
+
+            if (isTaskEditable) {
+              editTodo();
+            } else setisTaskEditable((prev) => !prev);
+          }}
           fill="none"
           className="text-orange-100 text-3xl mr-0.5"
           xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +79,7 @@ function Todo() {
           </g>
         </svg>
         <svg
-          onClick={handleDelClick}
+          onClick={() => deleteTodo()}
           fill="none"
           className="text-orange-100 text-3xl ml-0.5"
           xmlns="http://www.w3.org/2000/svg"
